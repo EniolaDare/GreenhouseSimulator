@@ -18,7 +18,6 @@ class LM35 {
         void genRandTemp();
 
     private:
-        // Adc value
         int adcData;
 };
 
