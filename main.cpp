@@ -20,7 +20,7 @@ const double DIST_HIGH = 5.0;
 const double DIST_LOW = 0.2;
 
 // Test Values
-const double TEST_ADC[SENSOR_COUNT] = {20.0, 40.0, 50.0, 70.0};
+const double TEST_ADC[SENSOR_COUNT] = {40.0, 40.0, 40.0, 40.0};
 const double TEST_DUR[SENSOR_COUNT] = {10.0, 100.0, 200.0, 300.0};
 
 // Function prototypes
@@ -113,7 +113,6 @@ void simulateNormal(){
         distSensors[i].genRandDist();
     }
 
-    // Display sensor readings and outputs
     printSensors(tempSensors, distSensors);
     printOutputs(tempSensors, distSensors);
     checkTempEqual(tempSensors);
