@@ -49,6 +49,7 @@ int main(){
         switch (choice) {
             case 1: simulateNormal(); break;
             case 2: simulateTest(); break;
+            case 3: break;
             default: std::cout << "Invalid choice.\n";
         }
 
@@ -100,8 +101,8 @@ void printOutputs(LM35 temp[], HRSR04 dist[]){
 
 // Normal mode - generates random sensor values and displays results
 void simulateNormal(){
-    static LM35 tempSensors[SENSOR_COUNT];      // Temperature sensor array
-    static HRSR04 distSensors[SENSOR_COUNT];    // Distance sensor array
+    LM35 tempSensors[SENSOR_COUNT];      // Temperature sensor array
+    HRSR04 distSensors[SENSOR_COUNT];    // Distance sensor array
 
     // Generate random values for sensors
     for (int i = 0; i < SENSOR_COUNT; i++){
@@ -114,5 +115,12 @@ void simulateNormal(){
     printOutputs(tempSensors, distSensors);
 }
 
+// Test mode - uses fixed sensor values
 void simulateTest(){
+    LM35 tempSensors[SENSOR_COUNT] = {LM35(20.0), LM35(40.0), LM35(50.0), LM35(70.0)};      // Temperature sensor array
+    HRSR04 distSensors[SENSOR_COUNT] = {HRSR04(10.0), HRSR04(100.0), HRSR04(200.0), HRSR04(300.0)};    // Distance sensor array
+
+    // Display sensor readings and outputs
+    printSensors(tempSensors, distSensors);
+    printOutputs(tempSensors, distSensors);
 }
