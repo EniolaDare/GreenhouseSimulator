@@ -12,30 +12,23 @@
 #define CLEAR std::system("clear")
 #endif
 
-// Number of each sensor
-#define SENSOR_COUNT 4
-
-// Sensor thresholds
-#define TEMP_HIGH 24    
-#define TEMP_LOW 18     
-#define DIST_HIGH 5.0   
-#define DIST_LOW 0.2   
+// Constants
+const int SENSOR_COUNT = 4;
+const double TEMP_HIGH = 24.0;
+const double TEMP_LOW = 18.0;
+const double DIST_HIGH = 5.0;
+const double DIST_LOW = 0.2;
 
 // Test Values
-const double TEST_TEMPS[SENSOR_COUNT] = {20.0, 40.0, 50.0, 70.0};
-const double TEST_DISTS[SENSOR_COUNT] = {10.0, 100.0, 200.0, 300.0};
+const double TEST_ADC[SENSOR_COUNT] = {20.0, 40.0, 50.0, 70.0};
+const double TEST_DUR[SENSOR_COUNT] = {10.0, 100.0, 200.0, 300.0};
 
-// Print sensor values
-void printSensors(LM35 temp[], HRSR04 dist[]);
-// Print light, vent and heater status
-void printOutputs(LM35 temp[], HRSR04 dist[], bool testMode = false);
-
-// Simulation modes
+// Function prototypes
+void printSensors(LM35 temp[SENSOR_COUNT], HRSR04 dist[SENSOR_COUNT]);
+void printOutputs(LM35 temp[SENSOR_COUNT], HRSR04 dist[SENSOR_COUNT], bool testMode = false);
 void simulateNormal();
 void simulateTest();
-
-// Check if temperature equal in all zones
-void checkTempEqual(LM35 temp[]);
+void checkTempEqual(LM35 temp[SENSOR_COUNT]);
 
 int main(){
     srand(time(0)); // Set random seed for sensor value generation
@@ -70,19 +63,23 @@ int main(){
 }
 
 // Display temperature and distance readings
-void printSensors(LM35 temp[], HRSR04 dist[]){
-    std::cout << "\n|    Zone    | Temperature |  Distance  |\n";
-    std::cout << "-----------------------------------------\n";
+void printSensors(LM35 temp[SENSOR_COUNT], HRSR04 dist[SENSOR_COUNT]){
+    std::cout << "\n------------------------------------------\n";
+    std::cout << "| Zone | Temperature (C) | Distance (m)  |\n";
+    std::cout << "------------------------------------------\n";
 
-    for (int i = 0; i < SENSOR_COUNT; i++){
-        std::cout << std::fixed << "|     " << i + 1 << "      |    ";
-        std::cout << std::setprecision(2) << temp[i].getTemp() << "    |    ";
-        std::cout << std::setprecision(2) << dist[i].getDist() << "    |\n";
+    for(int i = 0; i < SENSOR_COUNT; i++) {
+        std::cout << "|  " << std::setw(3) << i+1;
+        std::cout << " |  " << std::setw(14) << std::fixed << std::setprecision(2) << temp[i].getTemp();
+        std::cout << " |  " << std::setw(12) << std::fixed << std::setprecision(2) << dist[i].getDist();
+        std::cout << " |\n";
     }
+
+    std::cout << "------------------------------------------\n";
 }
 
 // Determine outputs for each zone
-void printOutputs(LM35 temp[], HRSR04 dist[], bool testMode){
+void printOutputs(LM35 temp[SENSOR_COUNT], HRSR04 dist[SENSOR_COUNT], bool testMode){
     double tempVal, distVal;
 
     // Check sensor readings against thresholds
@@ -107,8 +104,8 @@ void printOutputs(LM35 temp[], HRSR04 dist[], bool testMode){
 
 // Normal mode - generates random sensor values and displays results
 void simulateNormal(){
-    LM35 tempSensors[SENSOR_COUNT];      // Temperature sensor array
-    HRSR04 distSensors[SENSOR_COUNT];    // Distance sensor array
+    LM35 tempSensors[SENSOR_COUNT]; 
+    HRSR04 distSensors[SENSOR_COUNT];
 
     // Generate random values for sensors
     for (int i = 0; i < SENSOR_COUNT; i++){
@@ -124,17 +121,16 @@ void simulateNormal(){
 
 // Test mode - uses fixed sensor values
 void simulateTest(){
-    LM35 tempSensors[SENSOR_COUNT] = {LM35(TEST_TEMPS[0]), LM35(TEST_TEMPS[1]), LM35(TEST_TEMPS[2]), LM35(TEST_TEMPS[3])};      // Temperature sensor array
-    HRSR04 distSensors[SENSOR_COUNT] = {HRSR04(TEST_DISTS[0]), HRSR04(TEST_DISTS[1]), HRSR04(TEST_DISTS[2]), HRSR04(TEST_DISTS[3])};    // Distance sensor array
+    LM35 tempSensors[SENSOR_COUNT] = {LM35(TEST_ADC[0]), LM35(TEST_ADC[1]), LM35(TEST_ADC[2]), LM35(TEST_ADC[3])};
+    HRSR04 distSensors[SENSOR_COUNT] = {HRSR04(TEST_DUR[0]), HRSR04(TEST_DUR[1]), HRSR04(TEST_DUR[2]), HRSR04(TEST_DUR[3])};  
 
-    // Display sensor readings and outputs
     printSensors(tempSensors, distSensors);
     printOutputs(tempSensors, distSensors, true);
     checkTempEqual(tempSensors);
 }
 
 // Check if all temperature readings are equal
-void checkTempEqual(LM35 temp[]){
+void checkTempEqual(LM35 temp[SENSOR_COUNT]){
     double firstTemp = temp[0].getTemp();
     bool equal = true;
 
