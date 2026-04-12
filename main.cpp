@@ -1,6 +1,8 @@
+#define _CRT_SECURE_NO_WARNINGS
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
+#include <cmath>
 #include <iomanip>
 #include "HRSR04/HRSR04.h"
 #include "LM35/LM35.h"
@@ -90,13 +92,13 @@ void printOutputs(LM35 temp[SENSOR_COUNT], HRSR04 dist[SENSOR_COUNT], bool testM
         std::cout << "Zone " << i + 1 << ": ";
 
         // Temperature control: vent if too hot, heater if too cold
-        if (tempVal > TEMP_HIGH) std::cout << "Vent open. ";
-        else if (tempVal < TEMP_LOW) std::cout << "Heater on. ";
+        if (tempVal > TEMP_HIGH) std::cout << "Vent OPEN. Heater OFF. ";
+        else if (tempVal < TEMP_LOW) std::cout << "Vent CLOSED. Heater ON. ";
         else std::cout << "Temp in Range. ";
 
         // Light control: off lights if distance out of range
-        if (distVal > DIST_HIGH || distVal < DIST_LOW) std::cout << (testMode ? "Zone Inactive. " : "Lights off. ");
-        else std::cout << (testMode ? "Zone Active. " : "Lights on. ");
+        if (distVal > DIST_HIGH || distVal < DIST_LOW) std::cout << (testMode ? "Zone Inactive. " : "Lights OFF. ");
+        else std::cout << (testMode ? "Zone Active. " : "Lights ON. ");
 
         std::cout << "\n";
     }
@@ -134,11 +136,12 @@ void checkTempEqual(LM35 temp[SENSOR_COUNT]){
     bool equal = true;
 
     for (int i = 1; i < SENSOR_COUNT; i++){
-        if (temp[i].getTemp() != firstTemp){
+        if (abs( temp[i].getTemp() - firstTemp ) > 0.01){  // Tolerance for decimal comparison
             equal = false;
             break;
         }
     }
 
-    std::cout << (equal ? "\nAll temperature readings are equal.\n" : "\nTemperature readings are not equal.\n");
+    if (equal) std::cout << "\nAll temperature readings are equal: " << std::fixed << std::setprecision(2) << firstTemp << " C\n";
+    else std::cout << "\nTemperature readings are not equal.\n";
 }
